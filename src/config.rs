@@ -149,7 +149,7 @@ pub fn save_file(cfg: &FileConfig) -> Result<()> {
     }
     let mut raw = toml::to_string(cfg).map_err(|e| Error::Config(e.to_string()))?;
     if !raw.is_empty() {
-        raw.insert_str(0, "# redmine-cli configuration\n");
+        raw.insert_str(0, "# redmine configuration\n");
     }
     fs::write(&path, raw)?;
     Ok(())

@@ -6,7 +6,7 @@ description = "Command-line client for the Redmine REST API (agent-friendly outp
 license = "MIT"
 
 [[bin]]
-name = "redmine-cli"
+name = "redmine"
 path = "src/main.rs"
 
 [dependencies]

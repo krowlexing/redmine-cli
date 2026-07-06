@@ -19,7 +19,7 @@ impl RedmineClient {
 
     pub fn with_verbose(config: &Config, verbose: bool) -> Result<Self> {
         let inner = reqwest::blocking::Client::builder()
-            .user_agent(concat!("redmine-cli/", env!("CARGO_PKG_VERSION")))
+            .user_agent(concat!("redmine/", env!("CARGO_PKG_VERSION")))
             .timeout(std::time::Duration::from_secs(30))
             .build()
             .map_err(|e| Error::Network(e.to_string()))?;

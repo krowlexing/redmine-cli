@@ -4,7 +4,7 @@ use crate::config::Format;
 
 #[derive(Parser, Debug)]
 #[command(
-    name = "redmine-cli",
+    name = "redmine",
     version,
     about = "Command-line client for the Redmine REST API (agent-friendly output)",
     long_about = None

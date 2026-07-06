@@ -8,14 +8,16 @@ A command-line client for the Redmine REST API, designed to be **agent-friendly*
 cargo install --path .
 ```
 
+The package is `redmine-cli`; it installs a single binary named **`redmine`**.
+
 ## Configure
 
 Layered config (highest precedence wins): CLI flags → environment → config file.
 
 ```
-redmine-cli config set --url https://redmine.example.com --key <API_KEY> --default-project infra
-redmine-cli config show
-redmine-cli config path
+redmine config set --url https://redmine.example.com --key <API_KEY> --default-project infra
+redmine config show
+redmine config path
 ```
 
 Environment variables: `REDMINE_URL`, `REDMINE_API_KEY`, `REDMINE_PROJECT`, `REDMINE_FORMAT`.
@@ -35,27 +37,27 @@ Errors go to stderr; exit codes are non-zero and categorized (see below).
 ## Shell completions
 
 ```
-redmine-cli completion bash    # also: zsh, fish, elvish, powershell
+redmine completion bash    # also: zsh, fish, elvish, powershell
 ```
 
-Pipe to your shell's completion directory, e.g. `redmine-cli completion zsh > _redmine-cli`.
+Pipe to your shell's completion directory, e.g. `redmine completion zsh > _redmine`.
 
 ## Commands
 
 ### Issues
 
 ```
-redmine-cli issue mine                           # assigned to me
-redmine-cli issue list [--assigned-to <id|me|name>] [--status <open|closed|name|id>]
+redmine issue mine                           # assigned to me
+redmine issue list [--assigned-to <id|me|name>] [--status <open|closed|name|id>]
                        [--project <ident|id|->] [--limit N] [--sort field:dir] [--all]
-redmine-cli issue show <ID> [--notes]            # detail; --notes adds journal history
-redmine-cli issue update <ID> [fields...]        # partial update (any subset)
-redmine-cli issue create --subject <S> [--project <ident|id|->]
+redmine issue show <ID> [--notes]            # detail; --notes adds journal history
+redmine issue update <ID> [fields...]        # partial update (any subset)
+redmine issue create --subject <S> [--project <ident|id|->]
                           [--description <D>] [--assignee <id|me|name>]
                           [--tracker <name|id>] [--priority <name|id>] [--status <name|id>]
-redmine-cli issue set-status <ID> <STATUS>
-redmine-cli issue assign <ID> <ASSIGNEE>
-redmine-cli issue close <ID>
+redmine issue set-status <ID> <STATUS>
+redmine issue assign <ID> <ASSIGNEE>
+redmine issue close <ID>
 ```
 
 Update fields: `--status --assignee --subject --description --priority --done <0-100> --note <comment>`.
@@ -65,21 +67,21 @@ Name resolution: status/priority/tracker/assignee accept human names or ids; `me
 ### Reference
 
 ```
-redmine-cli project list
-redmine-cli project show <id|identifier>
-redmine-cli user list [--name <substr>]
-redmine-cli status                              # list issue statuses
+redmine project list
+redmine project show <id|identifier>
+redmine user list [--name <substr>]
+redmine status                              # list issue statuses
 ```
 
 ## Use cases
 
 | Task | Command |
 |---|---|
-| list assigned issues | `redmine-cli issue mine` |
-| show description by id | `redmine-cli issue show 1234` |
-| change status | `redmine-cli issue set-status 1234 "In Progress"` |
-| change assignee | `redmine-cli issue assign 1234 me` |
-| create issue | `redmine-cli issue create --project infra --subject "Fix build" --description "..."` |
+| list assigned issues | `redmine issue mine` |
+| show description by id | `redmine issue show 1234` |
+| change status | `redmine issue set-status 1234 "In Progress"` |
+| change assignee | `redmine issue assign 1234 me` |
+| create issue | `redmine issue create --project infra --subject "Fix build" --description "..."` |
 
 ## Exit codes
 
@@ -101,16 +103,16 @@ redmine-cli status                              # list issue statuses
 ## Examples
 
 ```
-$ redmine-cli issue mine
+$ redmine issue mine
 id	project	tracker	status	priority	assignee	subject	updated
 1234	infra	Bug	In Progress	High	Alice Smith	Fix the build	2026-07-05 10:00:00
 
-$ redmine-cli --format pretty issue mine
+$ redmine --format pretty issue mine
 | id   | project | tracker | status      | priority | assignee    | subject       | updated             |
 |------|---------|---------|-------------|----------|-------------|---------------|---------------------|
 | 1234 | infra   | Bug     | In Progress | High     | Alice Smith | Fix the build | 2026-07-05 10:00:00 |
 
-$ redmine-cli issue show 1234
+$ redmine issue show 1234
 id	1234
 project	infra
 status	In Progress

@@ -11,6 +11,7 @@ fn cfg(format: Format) -> Config {
         api_key: "k".into(),
         default_project: None,
         format,
+        mutable: true,
         source: ConfigSource { url_from: "test", key_from: "test" },
     }
 }

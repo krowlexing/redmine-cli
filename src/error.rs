@@ -20,6 +20,7 @@ pub enum Error {
     NotFound(String),
     Ambiguous { kind: String, name: String, matches: Vec<String> },
     Usage(String),
+    Blocked,
 }
 
 impl fmt::Display for Error {
@@ -46,6 +47,10 @@ impl fmt::Display for Error {
                 write!(f, "ambiguous {kind} '{name}', matches: {}", matches.join(", "))
             }
             Error::Usage(m) => write!(f, "usage error: {m}"),
+            Error::Blocked => write!(
+                f,
+                "mutable operations are blocked. requires human intervention"
+            ),
         }
     }
 }

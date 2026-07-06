@@ -6,11 +6,15 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::{Error, Result};
 
+const MUTABLE_ENV: &str = "REDMINE_ALLOW_MUTATIONS";
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct FileConfig {
     pub url: Option<String>,
     pub api_key: Option<String>,
     pub default_project: Option<String>,
+    #[serde(default)]
+    pub mutable: Option<bool>,
 }
 
 #[derive(Debug, Clone)]
@@ -19,6 +23,7 @@ pub struct Config {
     pub api_key: String,
     pub default_project: Option<String>,
     pub format: Format,
+    pub mutable: bool,
     pub source: ConfigSource,
 }
 
@@ -85,6 +90,7 @@ impl Config {
             .or_else(|| env::var("REDMINE_FORMAT").ok().and_then(|s| parse_format(&s)))
             .unwrap_or_default();
 
+        let mutable = resolve_mutable(file.mutable);
         let base = url.trim_end_matches('/').to_string();
 
         Ok(Config {
@@ -92,9 +98,29 @@ impl Config {
             api_key,
             default_project,
             format,
+            mutable,
             source: ConfigSource { url_from, key_from },
         })
     }
+
+    pub fn ensure_mutable(&self) -> Result<()> {
+        if self.mutable {
+            Ok(())
+        } else {
+            Err(Error::Blocked)
+        }
+    }
+}
+
+fn resolve_mutable(file_val: Option<bool>) -> bool {
+    if let Ok(raw) = env::var(MUTABLE_ENV) {
+        return truthy(&raw);
+    }
+    file_val.unwrap_or(false)
+}
+
+fn truthy(s: &str) -> bool {
+    matches!(s.trim().to_ascii_lowercase().as_str(), "1" | "true" | "yes" | "on")
 }
 
 fn parse_format(s: &str) -> Option<Format> {

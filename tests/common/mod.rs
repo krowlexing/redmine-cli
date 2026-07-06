@@ -179,6 +179,7 @@ pub fn test_config(server: &MockServer) -> Config {
         api_key: "test-key".into(),
         default_project: None,
         format: Format::Tab,
+        mutable: true,
         source: ConfigSource { url_from: "test", key_from: "test" },
     }
 }

@@ -29,6 +29,7 @@ pub fn run(cmd: ConfigCommand) -> Result<()> {
             println!("api_key\t{}", mask(&cfg.api_key));
             println!("default_project\t{}", cfg.default_project.unwrap_or_default());
             println!("format\t{}", cfg.format.as_str());
+            println!("mutable\t{}", cfg.mutable);
             println!("url_source\t{}", cfg.source.url_from);
             println!("api_key_source\t{}", cfg.source.key_from);
             Ok(())

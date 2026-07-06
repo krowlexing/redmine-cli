@@ -34,6 +34,10 @@ Errors go to stderr; exit codes are non-zero and categorized (see below).
 
 `--verbose` makes HTTP errors print the request method and full response body (normally truncated to 200 chars) — useful for debugging API failures.
 
+## Mutations are blocked by default
+
+For safety, all mutating commands (`issue create`, `update`, `set-status`, `assign`, `close`) are **refused by default** with exit code 6 (`mutable operations are blocked. requires human intervention`). Read-only commands are unaffected. Enabling mutations requires explicit human action on the host (not via any CLI flag) — the CLI deliberately exposes no way for an automated caller to unlock itself.
+
 ## Shell completions
 
 ```
@@ -92,6 +96,7 @@ redmine status                              # list issue statuses
 | 3 | not found |
 | 4 | ambiguous name |
 | 5 | config error |
+| 6 | mutation blocked (needs human approval) |
 | 10 | other HTTP error |
 | 11 | auth error (401/403) |
 | 12 | not found HTTP (404) |

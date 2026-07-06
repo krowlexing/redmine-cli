@@ -61,15 +61,24 @@ fn run_issue(client: &RedmineClient, config: &Config, action: IssueCommand) -> R
         IssueCommand::List(args) => commands::issue::list(client, config, args, &mut out),
         IssueCommand::Of(args) => commands::issue::of(client, config, args, &mut out),
         IssueCommand::Show { id, notes } => commands::issue::show(client, config, id, notes, &mut out),
-        IssueCommand::Update(args) => commands::issue::update(client, config, args, &mut out),
-        IssueCommand::Create(args) => commands::issue::create(client, config, args, &mut out),
+        IssueCommand::Update(args) => {
+            config.ensure_mutable()?;
+            commands::issue::update(client, config, args, &mut out)
+        }
+        IssueCommand::Create(args) => {
+            config.ensure_mutable()?;
+            commands::issue::create(client, config, args, &mut out)
+        }
         IssueCommand::SetStatus { id, status } => {
+            config.ensure_mutable()?;
             commands::issue::update(client, config, issue_args_for_status(id, status), &mut out)
         }
         IssueCommand::Assign { id, assignee } => {
+            config.ensure_mutable()?;
             commands::issue::update(client, config, issue_args_for_assignee(id, assignee), &mut out)
         }
         IssueCommand::Close { id } => {
+            config.ensure_mutable()?;
             commands::issue::update(client, config, issue_args_for_status(id, "Closed".into()), &mut out)
         }
     }
@@ -111,6 +120,7 @@ fn exit_code(e: &Error) -> i32 {
         Error::NotFound(_) => 3,
         Error::Ambiguous { .. } => 4,
         Error::Config(_) => 5,
+        Error::Blocked => 6,
         Error::Http { status, .. } => match *status {
             401 | 403 => 11,
             404 => 12,

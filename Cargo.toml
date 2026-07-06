@@ -1,0 +1,26 @@
+[package]
+name = "redmine-cli"
+version = "0.1.0"
+edition = "2021"
+description = "Command-line client for the Redmine REST API (agent-friendly output)"
+license = "MIT"
+
+[[bin]]
+name = "redmine-cli"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive", "env"] }
+clap_complete = "4.5"
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+toml = "0.8"
+directories = "5.0"
+
+[dev-dependencies]
+# no external dev-deps: tests use a built-in synchronous mock server
+
+[profile.release]
+opt-level = 2

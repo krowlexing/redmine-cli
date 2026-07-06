@@ -1,0 +1,6 @@
+/target
+**/*.rs.bk
+
+# local config may contain secrets
+# (config.toml lives in XDG config dir, not here, but guard anyway)
+config.toml

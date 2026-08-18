@@ -96,24 +96,10 @@ pub fn show<W: Write>(client: &RedmineClient, config: &Config, id: i64, include_
     let query: &[(&str, &str)] = if include_journals {
         &[("include", "journals")]
     } else {
-        &[("include", "attachments")]
+        &[]
     };
     let wrapper: IssueWrapper = client.get(&path, query)?;
     output::render_issue_detail(config.format, out, &wrapper.issue, include_journals);
-    
-    if let Some(attachments) = &wrapper.issue.attachments {
-        if !attachments.is_empty() {
-            let count = attachments.len();
-            let _ = writeln!(
-                out,
-                "This issue has {} attachment{}. Run `redmine issue attachments {}` to list them.",
-                count,
-                if count == 1 { "" } else { "s" },
-                id
-            );
-        }
-    }
-    
     Ok(())
 }
 

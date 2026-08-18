@@ -81,6 +81,9 @@ fn run_issue(client: &RedmineClient, config: &Config, action: IssueCommand) -> R
             config.ensure_mutable()?;
             commands::issue::update(client, config, issue_args_for_status(id, "Closed".into()), &mut out)
         }
+        IssueCommand::Attachments { action } => {
+            commands::issue::attachments(client, config, action, &mut out)
+        }
     }
 }
 

@@ -90,6 +90,11 @@ pub enum IssueCommand {
     Close { id: i64 },
     /// Convenience: list issues by status/project
     Of(OfArgs),
+    /// List or download attachments
+    Attachments {
+        #[command(subcommand)]
+        action: AttachmentsArgs,
+    },
 }
 
 #[derive(Parser, Debug, Clone)]
@@ -193,6 +198,18 @@ pub enum ConfigCommand {
     Show,
     /// Print the config file path
     Path,
+}
+
+#[derive(Subcommand, Debug, Clone)]
+pub enum AttachmentsArgs {
+    /// List attachments on an issue
+    List { id: i64 },
+    /// Download an attachment
+    Download {
+        id: i64,
+        #[arg(long, help = "Output file path (defaults to attachment filename)")]
+        output: Option<std::path::PathBuf>,
+    },
 }
 
 #[derive(Clone, Debug)]

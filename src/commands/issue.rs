@@ -1,6 +1,6 @@
 use std::io::Write;
 
-use crate::cli::{IssueCreateArgs, IssueListArgs, IssueUpdateArgs, OfArgs};
+use crate::cli::{AttachmentsArgs, IssueCreateArgs, IssueListArgs, IssueUpdateArgs, OfArgs};
 use crate::client::RedmineClient;
 use crate::config::Config;
 use crate::error::{Error, Result};
@@ -208,4 +208,15 @@ pub fn create<W: Write>(client: &RedmineClient, config: &Config, args: IssueCrea
 #[derive(serde::Serialize)]
 struct IssueCreateBody {
     issue: IssueCreate,
+}
+
+pub fn attachments<W: Write>(client: &RedmineClient, config: &Config, args: AttachmentsArgs, out: &mut W) -> Result<()> {
+    match args {
+        AttachmentsArgs::List { id } => {
+            Err(Error::Usage("attachments list not yet implemented".into()))
+        }
+        AttachmentsArgs::Download { id, output } => {
+            Err(Error::Usage("attachments download not yet implemented".into()))
+        }
+    }
 }

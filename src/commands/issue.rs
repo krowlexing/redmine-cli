@@ -243,7 +243,19 @@ pub fn attachments<W: Write>(client: &RedmineClient, config: &Config, args: Atta
             Ok(())
         }
         AttachmentsArgs::Download { id, output } => {
-            Err(Error::Usage("attachments download not yet implemented".into()))
+            let output_path = output.unwrap_or_else(|| {
+                std::path::PathBuf::from(format!("{}", id))
+            });
+            
+            client.download_attachment(id, &output_path)?;
+            
+            let _ = writeln!(
+                out,
+                "Attachment {} downloaded to {}",
+                id,
+                output_path.display()
+            );
+            Ok(())
         }
     }
 }

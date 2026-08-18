@@ -213,7 +213,20 @@ struct IssueCreateBody {
 pub fn attachments<W: Write>(client: &RedmineClient, config: &Config, args: AttachmentsArgs, out: &mut W) -> Result<()> {
     match args {
         AttachmentsArgs::List { id } => {
-            Err(Error::Usage("attachments list not yet implemented".into()))
+            let path = format!("/issues/{id}.json");
+            let query: &[(&str, &str)] = &[("include", "attachments")];
+            let wrapper: IssueWrapper = client.get(&path, query)?;
+            
+            if let Some(attachments) = &wrapper.issue.attachments {
+                if attachments.is_empty() {
+                    let _ = writeln!(out, "No attachments");
+                } else {
+                    output::render_attachment_list(config.format, out, attachments);
+                }
+            } else {
+                let _ = writeln!(out, "No attachments");
+            }
+            Ok(())
         }
         AttachmentsArgs::Download { id, output } => {
             Err(Error::Usage("attachments download not yet implemented".into()))

@@ -49,6 +49,21 @@ pub struct Issue {
     pub closed_on: Option<String>,
     #[serde(default)]
     pub journals: Option<Vec<Journal>>,
+    #[serde(default)]
+    pub attachments: Option<Vec<Attachment>>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct Attachment {
+    pub id: i64,
+    pub filename: String,
+    pub filesize: i64,
+    pub content_type: String,
+    pub content_url: String,
+    pub author: UserRef,
+    pub created_on: String,
+    #[serde(default)]
+    pub description: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

@@ -347,3 +347,44 @@ pub fn render_ack<W: Write>(
         }
     }
 }
+
+fn format_file_size(size: i64) -> String {
+    const KB: i64 = 1024;
+    const MB: i64 = KB * 1024;
+    const GB: i64 = MB * 1024;
+    
+    if size >= GB {
+        format!("{:.1} GB", size as f64 / GB as f64)
+    } else if size >= MB {
+        format!("{:.1} MB", size as f64 / MB as f64)
+    } else if size >= KB {
+        format!("{:.1} KB", size as f64 / KB as f64)
+    } else {
+        format!("{} B", size)
+    }
+}
+
+pub fn render_attachment_list<W: Write>(format: Format, out: &mut W, attachments: &[crate::models::issue::Attachment]) {
+    let cols = ["id", "filename", "size", "content_type", "author", "created_on"];
+    let rows: Vec<Row> = attachments
+        .iter()
+        .map(|a| {
+            Row::new("attachment", a.id)
+                .set("id", a.id.to_string())
+                .set("filename", a.filename.clone())
+                .set("size", format_file_size(a.filesize))
+                .set("content_type", a.content_type.clone())
+                .set("author", a.author.name.clone())
+                .set("created_on", a.created_on.clone())
+        })
+        .collect();
+    
+    print_list(format, out, &cols, rows, |row, col| {
+        row.get(col).unwrap_or("").to_string()
+    });
+    
+    let _ = writeln!(
+        out,
+        "Use `redmine issue attachments download <attachment-id>` to download attachment into cwd. Check --help for more flags."
+    );
+}

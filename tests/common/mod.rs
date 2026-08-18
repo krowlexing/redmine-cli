@@ -136,6 +136,7 @@ fn handle_one(
     let status_line = match status {
         200 => "HTTP/1.1 200 OK",
         201 => "HTTP/1.1 201 Created",
+        403 => "HTTP/1.1 403 Forbidden",
         404 => "HTTP/1.1 404 Not Found",
         422 => "HTTP/1.1 422 Unprocessable Entity",
         500 => "HTTP/1.1 500 Internal Server Error",

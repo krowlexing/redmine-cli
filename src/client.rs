@@ -1,4 +1,5 @@
 use serde::de::DeserializeOwned;
+use std::path::Path;
 
 use crate::config::Config;
 use crate::error::{Error, Result};
@@ -123,5 +124,24 @@ impl RedmineClient {
     pub fn current_user(&self) -> Result<i64> {
         let cu: CurrentUser = self.get("/users/current.json", &[])?;
         Ok(cu.user.id)
+    }
+
+    pub fn download_attachment(&self, id: i64, output_path: &Path) -> Result<()> {
+        let url = format!("{}/attachments/download/{}", self.base, id);
+        let resp = self
+            .inner
+            .request(reqwest::Method::GET, &url)
+            .header("X-Redmine-API-Key", &self.api_key)
+            .send()?;
+
+        let status = resp.status();
+        if !status.is_success() {
+            let text = resp.text().unwrap_or_default();
+            return Err(self.http_err("GET", url, status.as_u16(), text));
+        }
+
+        let bytes = resp.bytes().map_err(|e| Error::Network(e.to_string()))?;
+        std::fs::write(output_path, bytes).map_err(|e| Error::Network(format!("failed to write file: {}", e)))?;
+        Ok(())
     }
 }

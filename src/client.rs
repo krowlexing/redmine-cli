@@ -5,6 +5,11 @@ use crate::config::Config;
 use crate::error::{Error, Result};
 use crate::models::project::CurrentUser;
 
+#[derive(serde::Deserialize)]
+struct AttachmentWrapper {
+    attachment: crate::models::issue::Attachment,
+}
+
 pub struct RedmineClient {
     inner: reqwest::blocking::Client,
     base: String,
@@ -145,5 +150,23 @@ impl RedmineClient {
         std::fs::write(&temp_path, bytes).map_err(|e| Error::Network(format!("failed to write file: {}", e)))?;
         std::fs::rename(&temp_path, output_path).map_err(|e| Error::Network(format!("failed to finalize file: {}", e)))?;
         Ok(())
+    }
+
+    pub fn get_attachment_filename(&self, id: i64) -> Result<String> {
+        let url = format!("{}/attachments/{}.json", self.base, id);
+        let resp = self
+            .inner
+            .request(reqwest::Method::GET, &url)
+            .header("X-Redmine-API-Key", &self.api_key)
+            .send()?;
+
+        let status = resp.status();
+        if !status.is_success() {
+            let text = resp.text().unwrap_or_default();
+            return Err(self.http_err("GET", url, status.as_u16(), text));
+        }
+
+        let wrapper: AttachmentWrapper = resp.json().map_err(|e| Error::Decode(e.to_string()))?;
+        Ok(wrapper.attachment.filename)
     }
 }

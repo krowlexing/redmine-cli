@@ -106,7 +106,7 @@ pub fn show<W: Write>(client: &RedmineClient, config: &Config, id: i64, include_
             let count = attachments.len();
             let _ = writeln!(
                 out,
-                "This issue has {} attachment{}. Run `redmine issue attachments {}` to list them.",
+                "This issue has {} attachment{}. Run `redmine issue attachments list {}` to list them.",
                 count,
                 if count == 1 { "" } else { "s" },
                 id
@@ -243,9 +243,12 @@ pub fn attachments<W: Write>(client: &RedmineClient, config: &Config, args: Atta
             Ok(())
         }
         AttachmentsArgs::Download { id, output } => {
-            let output_path = output.unwrap_or_else(|| {
-                std::path::PathBuf::from(format!("{}", id))
-            });
+            let output_path = if let Some(custom_path) = output {
+                custom_path
+            } else {
+                let filename = client.get_attachment_filename(id)?;
+                std::path::PathBuf::from(filename)
+            };
             
             client.download_attachment(id, &output_path)?;
             

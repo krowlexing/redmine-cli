@@ -5,6 +5,22 @@ fn test_attachments_download_success() {
     let server = common::MockServer::start();
     server
         .mock()
+        .get("/attachments/10.json")
+        .status(200)
+        .body(r#"{
+            "attachment": {
+                "id": 10,
+                "filename": "document.pdf",
+                "filesize": 1024,
+                "content_type": "application/pdf",
+                "content_url": "http://example.com/attachments/10",
+                "author": {"id": 1, "name": "Alice"},
+                "created_on": "2024-01-01T00:00:00Z"
+            }
+        }"#)
+        .mount();
+    server
+        .mock()
         .get("/attachments/download/10")
         .status(200)
         .body("test file content")
@@ -19,13 +35,30 @@ fn test_attachments_download_success() {
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("downloaded") || stdout.contains("saved"));
+    assert!(stdout.contains("document.pdf"));
     
-    let _ = std::fs::remove_file("/tmp/10");
+    let _ = std::fs::remove_file("/tmp/document.pdf");
 }
 
 #[test]
 fn test_attachments_download_with_custom_output() {
     let server = common::MockServer::start();
+    server
+        .mock()
+        .get("/attachments/20.json")
+        .status(200)
+        .body(r#"{
+            "attachment": {
+                "id": 20,
+                "filename": "image.jpg",
+                "filesize": 2048,
+                "content_type": "image/jpeg",
+                "content_url": "http://example.com/attachments/20",
+                "author": {"id": 2, "name": "Bob"},
+                "created_on": "2024-01-02T00:00:00Z"
+            }
+        }"#)
+        .mount();
     server
         .mock()
         .get("/attachments/download/20")
@@ -57,7 +90,7 @@ fn test_attachments_download_not_found() {
     let server = common::MockServer::start();
     server
         .mock()
-        .get("/attachments/download/999")
+        .get("/attachments/999.json")
         .status(404)
         .body(r#"{"error": "Attachment not found"}"#)
         .mount();
@@ -81,7 +114,7 @@ fn test_attachments_download_forbidden() {
     let server = common::MockServer::start();
     server
         .mock()
-        .get("/attachments/download/30")
+        .get("/attachments/30.json")
         .status(403)
         .body(r#"{"error": "Forbidden"}"#)
         .mount();
@@ -96,8 +129,7 @@ fn test_attachments_download_forbidden() {
         .expect("failed to execute");
 
     assert!(!output.status.success());
-    let exit_code = output.status.code().unwrap_or(0);
-    assert!(exit_code == 11 || exit_code == 2);
+    assert_eq!(output.status.code(), Some(11));
 }
 
 #[test]
@@ -105,7 +137,7 @@ fn test_attachments_download_network_error() {
     let server = common::MockServer::start();
     server
         .mock()
-        .get("/attachments/download/40")
+        .get("/attachments/40.json")
         .status(500)
         .body(r#"{"error": "Internal server error"}"#)
         .mount();

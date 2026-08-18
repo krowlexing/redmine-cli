@@ -38,7 +38,7 @@ fn test_issue_show_with_attachments_shows_footer() {
     let stdout = String::from_utf8_lossy(&output.stdout);
     
     assert!(stdout.contains("This issue has 1 attachment"));
-    assert!(stdout.contains("redmine issue attachments 1"));
+    assert!(stdout.contains("redmine issue attachments list 1"));
 }
 
 #[test]
@@ -88,7 +88,7 @@ fn test_issue_show_with_multiple_attachments_shows_footer() {
     let stdout = String::from_utf8_lossy(&output.stdout);
     
     assert!(stdout.contains("This issue has 2 attachments"));
-    assert!(stdout.contains("redmine issue attachments 2"));
+    assert!(stdout.contains("redmine issue attachments list 2"));
 }
 
 #[test]
@@ -169,5 +169,5 @@ fn test_issue_show_with_notes_and_attachments() {
     
     assert!(stdout.contains("First note"));
     assert!(stdout.contains("This issue has 1 attachment"));
-    assert!(stdout.contains("redmine issue attachments 4"));
+    assert!(stdout.contains("redmine issue attachments list 4"));
 }

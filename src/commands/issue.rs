@@ -60,7 +60,7 @@ pub fn list<W: Write>(client: &RedmineClient, config: &Config, args: IssueListAr
         let mut offset = 0u32;
         loop {
             let mut q = qref.clone();
-            q.push(("offset", &""));
+            q.push(("offset", ""));
             let off_str = offset.to_string();
             q.last_mut().unwrap().1 = off_str.as_str();
             let page: IssueList = client.get("/issues.json", &q)?;
@@ -94,7 +94,7 @@ pub fn of<W: Write>(client: &RedmineClient, config: &Config, args: OfArgs, out: 
 pub fn show<W: Write>(client: &RedmineClient, config: &Config, id: i64, include_journals: bool, out: &mut W) -> Result<()> {
     let path = format!("/issues/{id}.json");
     let query: &[(&str, &str)] = if include_journals {
-        &[("include", "journals")]
+        &[("include", "attachments,journals")]
     } else {
         &[("include", "attachments")]
     };

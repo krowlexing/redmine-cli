@@ -166,7 +166,7 @@ fn parse_request(raw: &str) -> (String, String, Option<String>, String) {
     let mut api_key = None;
     for line in lines {
         let lower = line.to_ascii_lowercase();
-        if let Some(v) = lower.strip_prefix("x-redmine-api-key:") {
+        if let Some(_v) = lower.strip_prefix("x-redmine-api-key:") {
             let start = "x-redmine-api-key:".len();
             api_key = Some(line[start..].trim().to_string());
         }

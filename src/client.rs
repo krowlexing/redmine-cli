@@ -141,7 +141,9 @@ impl RedmineClient {
         }
 
         let bytes = resp.bytes().map_err(|e| Error::Network(e.to_string()))?;
-        std::fs::write(output_path, bytes).map_err(|e| Error::Network(format!("failed to write file: {}", e)))?;
+        let temp_path = output_path.with_extension("tmp");
+        std::fs::write(&temp_path, bytes).map_err(|e| Error::Network(format!("failed to write file: {}", e)))?;
+        std::fs::rename(&temp_path, output_path).map_err(|e| Error::Network(format!("failed to finalize file: {}", e)))?;
         Ok(())
     }
 }

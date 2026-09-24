@@ -74,6 +74,7 @@ pub enum IssueCommand {
     List(IssueListArgs),
     /// Show a single issue in detail
     Show {
+        #[arg(help = "Issue ID")]
         id: i64,
         #[arg(long, help = "Include journal history")]
         notes: bool,
@@ -83,11 +84,22 @@ pub enum IssueCommand {
     /// Create a new issue
     Create(IssueCreateArgs),
     /// Convenience: set status only
-    SetStatus { id: i64, status: String },
+    SetStatus {
+        #[arg(help = "Issue ID")]
+        id: i64,
+        status: String,
+    },
     /// Convenience: assign only
-    Assign { id: i64, assignee: String },
+    Assign {
+        #[arg(help = "Issue ID")]
+        id: i64,
+        assignee: String,
+    },
     /// Convenience: close (set status to Closed)
-    Close { id: i64 },
+    Close {
+        #[arg(help = "Issue ID")]
+        id: i64,
+    },
     /// Convenience: list issues by status/project
     Of(OfArgs),
     /// List or download attachments
@@ -121,24 +133,25 @@ pub struct OfArgs {
     pub project: Option<String>,
     #[arg(long, help = "Filter assignee")]
     pub assigned_to: Option<String>,
-    #[arg(long, default_value = "25")]
+    #[arg(long, default_value = "25", help = "Page size")]
     pub limit: u32,
-    #[arg(long, default_value = "updated_on:desc")]
+    #[arg(long, default_value = "updated_on:desc", help = "Sort spec e.g. updated_on:desc")]
     pub sort: String,
-    #[arg(long)]
+    #[arg(long, help = "Fetch all pages (overrides --limit)")]
     pub all: bool,
 }
 
 #[derive(Parser, Debug, Clone)]
 pub struct IssueUpdateArgs {
+    #[arg(help = "Issue ID")]
     pub id: i64,
     #[arg(long, help = "New status (name or id)")]
     pub status: Option<String>,
     #[arg(long, help = "New assignee (id, 'me', or name substring)")]
     pub assignee: Option<String>,
-    #[arg(long)]
+    #[arg(long, help = "New subject")]
     pub subject: Option<String>,
-    #[arg(long)]
+    #[arg(long, help = "New description")]
     pub description: Option<String>,
     #[arg(long, help = "New priority (name or id)")]
     pub priority: Option<String>,
@@ -152,9 +165,9 @@ pub struct IssueUpdateArgs {
 pub struct IssueCreateArgs {
     #[arg(long, help = "Project: identifier, id, or '-' for default")]
     pub project: Option<String>,
-    #[arg(long)]
+    #[arg(long, help = "Issue subject")]
     pub subject: String,
-    #[arg(long)]
+    #[arg(long, help = "Issue description")]
     pub description: Option<String>,
     #[arg(long, help = "Assignee (id, 'me', or name substring)")]
     pub assignee: Option<String>,
@@ -171,7 +184,10 @@ pub enum ProjectCommand {
     /// List all projects
     List,
     /// Show details of one project
-    Show { id: Identifier },
+    Show {
+        #[arg(help = "Project id or identifier")]
+        id: Identifier,
+    },
 }
 
 #[derive(Subcommand, Debug)]
@@ -187,11 +203,11 @@ pub enum UserCommand {
 pub enum ConfigCommand {
     /// Set configuration values
     Set {
-        #[arg(long)]
+        #[arg(long, help = "Redmine base URL")]
         url: Option<String>,
-        #[arg(long)]
+        #[arg(long, help = "Redmine API key")]
         key: Option<String>,
-        #[arg(long)]
+        #[arg(long, help = "Default project identifier")]
         default_project: Option<String>,
     },
     /// Show effective configuration and source
@@ -203,9 +219,13 @@ pub enum ConfigCommand {
 #[derive(Subcommand, Debug, Clone)]
 pub enum AttachmentsArgs {
     /// List attachments on an issue
-    List { id: i64 },
+    List {
+        #[arg(help = "Issue ID")]
+        id: i64,
+    },
     /// Download an attachment
     Download {
+        #[arg(help = "Attachment ID")]
         id: i64,
         #[arg(long, help = "Output file path (defaults to attachment filename)")]
         output: Option<std::path::PathBuf>,

@@ -88,6 +88,17 @@ redmine user list [--name <substr>]
 redmine status                              # list issue statuses
 ```
 
+### Agent skill
+
+Coding agents (pi and other Agent Skills compatible harnesses) can discover usage instructions as a skill:
+
+```
+redmine skill install    # write SKILL.md to ~/.agents/skills/redmine
+redmine skill show       # print the skill content for inspection
+```
+
+The source file is `skills/redmine/SKILL.md`, embedded into the binary at build time — install it manually from the repo if you prefer not to run the command.
+
 ## Use cases
 
 | Task | Command |

@@ -64,6 +64,11 @@ pub enum Command {
         #[command(subcommand)]
         action: ConfigCommand,
     },
+    /// Manage the agent skill for this CLI
+    Skill {
+        #[command(subcommand)]
+        action: SkillCommand,
+    },
 }
 
 #[derive(Subcommand, Debug)]
@@ -214,6 +219,14 @@ pub enum ConfigCommand {
     Show,
     /// Print the config file path
     Path,
+}
+
+#[derive(Subcommand, Debug)]
+pub enum SkillCommand {
+    /// Install SKILL.md into ~/.agents/skills/redmine so coding agents discover it
+    Install,
+    /// Print the SKILL.md content to stdout
+    Show,
 }
 
 #[derive(Subcommand, Debug, Clone)]

@@ -24,6 +24,7 @@ fn run(args: Cli) -> Result<()> {
     let Cli { url, key, project, format, verbose, command } = args;
     match command {
         Command::Config { action } => commands::config_cmd::run(action),
+        Command::Skill { action } => commands::skill::run(action, &mut std::io::stdout()),
         Command::Completion { shell } => {
             commands::completion::generate(shell);
             Ok(())

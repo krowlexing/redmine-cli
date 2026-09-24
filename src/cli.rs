@@ -223,7 +223,7 @@ pub enum ConfigCommand {
 
 #[derive(Subcommand, Debug)]
 pub enum SkillCommand {
-    /// Install SKILL.md into ~/.agents/skills/redmine so coding agents discover it
+    /// Install SKILL.md into ~/.agents/skills/redmine (overwrites existing file) so coding agents discover it
     Install,
     /// Print the SKILL.md content to stdout
     Show,

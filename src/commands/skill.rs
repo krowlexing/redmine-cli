@@ -11,8 +11,9 @@ pub fn run<W: Write>(cmd: SkillCommand, out: &mut W) -> Result<()> {
     match cmd {
         SkillCommand::Install => {
             let home = home_dir()?;
-            let path = install_into(&home)?;
-            writeln!(out, "installed\t{}", path.display())?;
+            let (path, existed) = install_into(&home)?;
+            let label = if existed { "overwritten" } else { "installed" };
+            writeln!(out, "{label}\t{}", path.display())?;
             Ok(())
         }
         SkillCommand::Show => {
@@ -26,13 +27,15 @@ pub fn skill_path(home: &Path) -> PathBuf {
     home.join(".agents").join("skills").join("redmine").join("SKILL.md")
 }
 
-pub fn install_into(home: &Path) -> Result<PathBuf> {
+pub fn install_into(home: &Path) -> Result<(PathBuf, bool)> {
     let path = skill_path(home);
-    if let Some(dir) = path.parent() {
-        fs::create_dir_all(dir)?;
-    }
-    fs::write(&path, SKILL_CONTENT)?;
-    Ok(path)
+    let dir = path.parent().ok_or_else(|| Error::Config("invalid skill path".into()))?;
+    let existed = path.exists();
+    fs::create_dir_all(dir).map_err(|e| Error::Config(format!("cannot install skill to {}: {e}", path.display())))?;
+    let tmp = dir.join("SKILL.md.tmp");
+    fs::write(&tmp, SKILL_CONTENT).map_err(|e| Error::Config(format!("cannot install skill to {}: {e}", path.display())))?;
+    fs::rename(&tmp, &path).map_err(|e| Error::Config(format!("cannot install skill to {}: {e}", path.display())))?;
+    Ok((path, existed))
 }
 
 fn home_dir() -> Result<PathBuf> {

@@ -97,7 +97,7 @@ redmine skill install    # write SKILL.md to ~/.agents/skills/redmine
 redmine skill show       # print the skill content for inspection
 ```
 
-The source file is `skills/redmine/SKILL.md`, embedded into the binary at build time — install it manually from the repo if you prefer not to run the command.
+The source file is `skills/redmine/SKILL.md`, embedded into the binary at build time — install it manually from the repo if you prefer not to run the command. Re-running install overwrites the existing file (the output says `installed` or `overwritten`).
 
 ## Use cases
 

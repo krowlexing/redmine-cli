@@ -36,7 +36,14 @@ Errors go to stderr; exit codes are non-zero and categorized (see below).
 
 ## Mutations are blocked by default
 
-For safety, all mutating commands (`issue create`, `update`, `set-status`, `assign`, `close`) are **refused by default** with exit code 6 (`mutable operations are blocked. requires human intervention`). Read-only commands are unaffected. Enabling mutations requires explicit human action on the host (not via any CLI flag) — the CLI deliberately exposes no way for an automated caller to unlock itself.
+For safety, all mutating commands (`issue create`, `update`, `set-status`, `assign`, `close`) are **refused by default** with exit code 6 (`mutable operations are blocked. requires human intervention`). Read-only commands are unaffected.
+
+To enable mutations, set one of:
+
+- `mutable = true` in the config file (find it with `redmine config path`)
+- the environment variable `REDMINE_ALLOW_MUTATIONS` to `1`, `true`, `yes` or `on` (overrides the config file)
+
+There is no CLI flag to unlock mutations.
 
 ## Shell completions
 
@@ -62,7 +69,11 @@ redmine issue create --subject <S> [--project <ident|id|->]
 redmine issue set-status <ID> <STATUS>
 redmine issue assign <ID> <ASSIGNEE>
 redmine issue close <ID>
+redmine issue attachments list <ID>
+redmine issue attachments download <ID> [--output <path>]
 ```
+
+`issue show` prints a footer with the attachment count and a listing hint when the issue has attachments. `download` without `--output` saves the file under its actual filename from the server.
 
 Update fields: `--status --assignee --subject --description --priority --done <0-100> --note <comment>`.
 
@@ -86,6 +97,8 @@ redmine status                              # list issue statuses
 | change status | `redmine issue set-status 1234 "In Progress"` |
 | change assignee | `redmine issue assign 1234 me` |
 | create issue | `redmine issue create --project infra --subject "Fix build" --description "..."` |
+| list attachments | `redmine issue attachments list 1234` |
+| download attachment | `redmine issue attachments download 1234` |
 
 ## Exit codes
 
@@ -117,6 +130,11 @@ $ redmine --format pretty issue mine
 |------|---------|---------|-------------|----------|-------------|---------------|---------------------|
 | 1234 | infra   | Bug     | In Progress | High     | Alice Smith | Fix the build | 2026-07-05 10:00:00 |
 
+$ redmine issue attachments list 1234
+id	filename	size	content_type	author	created_on
+17	build.log	2.3 KB	text/plain	Alice Smith	2026-07-05 10:00:00
+Use `redmine issue attachments download <attachment-id>` to download attachment into cwd. Check --help for more flags.
+
 $ redmine issue show 1234
 id	1234
 project	infra
@@ -124,6 +142,7 @@ status	In Progress
 ...
 DESCRIPTION
 The CI build fails...
+This issue has 1 attachment. Run `redmine issue attachments list 1234` to list them.
 ```
 
 ## Project layout

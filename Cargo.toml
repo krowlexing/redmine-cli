@@ -24,3 +24,6 @@ directories = "5.0"
 
 [profile.release]
 opt-level = 2
+lto = "thin"
+codegen-units = 1
+strip = true

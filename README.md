@@ -2,13 +2,37 @@
 
 A command-line client for the Redmine REST API, designed to be **agent-friendly**: token-efficient output, no decorative symbols by default, machine-parseable formats.
 
+```
+redmine issue mine                           # assigned to me
+redmine issue list --project infra --status open
+redmine issue show 1234 --notes              # description + history
+redmine issue attachments download 1234
+redmine project list
+```
+
+Name resolution: status/priority/tracker/assignee accept human names or ids; `me` resolves to the API key's user. Run `redmine <command> --help` for all flags.
+
 ## Install
 
+### Pre-built binary
+
+Download `redmine` for Linux or `redmine.exe` for Windows from [GitHub releases](https://github.com/<owner>/redmine-cli/releases), make it executable, and put it on your `PATH`.
+
+A `.sha256` checksum is published next to each binary.
+
+### From source
+
 ```
-cargo install --path .
+cargo install --git https://github.com/<owner>/redmine-cli.git
 ```
 
 The package is `redmine-cli`; it installs a single binary named **`redmine`**.
+
+To make coding agents discover usage instructions:
+
+```
+redmine skill install
+```
 
 ## Configure
 
@@ -22,6 +46,17 @@ redmine config path
 
 Environment variables: `REDMINE_URL`, `REDMINE_API_KEY`, `REDMINE_PROJECT`, `REDMINE_FORMAT`.
 
+## Mutations are blocked by default
+
+For safety, all mutating commands (`issue create`, `update`, `set-status`, `assign`, `close`) are **refused by default** with exit code 6 (`mutable operations are blocked. requires human intervention`). Read-only commands are unaffected.
+
+To enable mutations, set one of:
+
+- `mutable = true` in the config file (find it with `redmine config path`)
+- the environment variable `REDMINE_ALLOW_MUTATIONS` to `1`, `true`, `yes` or `on` (overrides the config file)
+
+There is no CLI flag to unlock mutations.
+
 ## Output formats
 
 `--format tab|pretty|json` (env `REDMINE_FORMAT`, default `tab`).
@@ -34,17 +69,6 @@ Errors go to stderr; exit codes are non-zero and categorized (see below).
 
 `--verbose` makes HTTP errors print the request method and full response body (normally truncated to 200 chars) — useful for debugging API failures.
 
-## Mutations are blocked by default
-
-For safety, all mutating commands (`issue create`, `update`, `set-status`, `assign`, `close`) are **refused by default** with exit code 6 (`mutable operations are blocked. requires human intervention`). Read-only commands are unaffected.
-
-To enable mutations, set one of:
-
-- `mutable = true` in the config file (find it with `redmine config path`)
-- the environment variable `REDMINE_ALLOW_MUTATIONS` to `1`, `true`, `yes` or `on` (overrides the config file)
-
-There is no CLI flag to unlock mutations.
-
 ## Shell completions
 
 ```
@@ -53,63 +77,16 @@ redmine completion bash    # also: zsh, fish, elvish, powershell
 
 Pipe to your shell's completion directory, e.g. `redmine completion zsh > _redmine`.
 
-## Commands
+## Agent skill
 
-### Issues
-
-```
-redmine issue mine                           # assigned to me
-redmine issue list [--assigned-to <id|me|name>] [--status <open|closed|name|id>]
-                       [--project <ident|id|->] [--limit N] [--sort field:dir] [--all]
-redmine issue show <ID> [--notes]            # detail; --notes adds journal history
-redmine issue update <ID> [fields...]        # partial update (any subset)
-redmine issue create --subject <S> [--project <ident|id|->]
-                          [--description <D>] [--assignee <id|me|name>]
-                          [--tracker <name|id>] [--priority <name|id>] [--status <name|id>]
-redmine issue set-status <ID> <STATUS>
-redmine issue assign <ID> <ASSIGNEE>
-redmine issue close <ID>
-redmine issue attachments list <ID>
-redmine issue attachments download <ID> [--output <path>]
-```
-
-`issue show` prints a footer with the attachment count and a listing hint when the issue has attachments. `download` without `--output` saves the file under its actual filename from the server.
-
-Update fields: `--status --assignee --subject --description --priority --done <0-100> --note <comment>`.
-
-Name resolution: status/priority/tracker/assignee accept human names or ids; `me` resolves to the API key's user. Ambiguous names error with candidates.
-
-### Reference
-
-```
-redmine project list
-redmine project show <id|identifier>
-redmine user list [--name <substr>]
-redmine status                              # list issue statuses
-```
-
-### Agent skill
-
-Coding agents (pi and other Agent Skills compatible harnesses) can discover usage instructions as a skill:
+Coding agents can discover usage instructions as a skill:
 
 ```
 redmine skill install    # write SKILL.md to ~/.agents/skills/redmine
 redmine skill show       # print the skill content for inspection
 ```
 
-The source file is `skills/redmine/SKILL.md`, embedded into the binary at build time — install it manually from the repo if you prefer not to run the command. Re-running install overwrites the existing file (the output says `installed` or `overwritten`).
-
-## Use cases
-
-| Task | Command |
-|---|---|
-| list assigned issues | `redmine issue mine` |
-| show description by id | `redmine issue show 1234` |
-| change status | `redmine issue set-status 1234 "In Progress"` |
-| change assignee | `redmine issue assign 1234 me` |
-| create issue | `redmine issue create --project infra --subject "Fix build" --description "..."` |
-| list attachments | `redmine issue attachments list 1234` |
-| download attachment | `redmine issue attachments download 1234` |
+The source file is `skills/redmine/SKILL.md`, embedded into the binary at build time; copy it manually if needed. Re-running install overwrites the file.
 
 ## Exit codes
 
@@ -136,16 +113,6 @@ $ redmine issue mine
 id	project	tracker	status	priority	assignee	subject	updated
 1234	infra	Bug	In Progress	High	Alice Smith	Fix the build	2026-07-05 10:00:00
 
-$ redmine --format pretty issue mine
-| id   | project | tracker | status      | priority | assignee    | subject       | updated             |
-|------|---------|---------|-------------|----------|-------------|---------------|---------------------|
-| 1234 | infra   | Bug     | In Progress | High     | Alice Smith | Fix the build | 2026-07-05 10:00:00 |
-
-$ redmine issue attachments list 1234
-id	filename	size	content_type	author	created_on
-17	build.log	2.3 KB	text/plain	Alice Smith	2026-07-05 10:00:00
-Use `redmine issue attachments download <attachment-id>` to download attachment into cwd. Check --help for more flags.
-
 $ redmine issue show 1234
 id	1234
 project	infra
@@ -153,32 +120,7 @@ status	In Progress
 ...
 DESCRIPTION
 The CI build fails...
-This issue has 1 attachment. Run `redmine issue attachments list 1234` to list them.
 ```
-
-## Project layout
-
-```
-src/
-  lib.rs         crate root (re-exports modules for tests)
-  main.rs        dispatch + exit codes
-  cli.rs         clap derive definitions
-  config.rs      layered config (flags > env > file)
-  client.rs      blocking Redmine HTTP client
-  resolve.rs     name ↔ id resolution + caching
-  output.rs      tab/pretty/json renderers (generic over writer)
-  error.rs       typed errors + verbose flag
-  models/        serde models (issue, project, user, common)
-  commands/      issue, project, user, config, completion
-```
-
-## Tests
-
-```
-cargo test
-```
-
-Integration tests use a built-in synchronous mock HTTP server (`tests/common/mod.rs`) — no external test server required. Covers list/show/create/update flows, name resolution, ambiguous-name errors, HTTP error mapping, output modes, and verbose error formatting.
 
 ## License
 

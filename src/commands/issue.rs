@@ -94,9 +94,9 @@ pub fn of<W: Write>(client: &RedmineClient, config: &Config, args: OfArgs, out: 
 pub fn show<W: Write>(client: &RedmineClient, config: &Config, id: i64, include_journals: bool, out: &mut W) -> Result<()> {
     let path = format!("/issues/{id}.json");
     let query: &[(&str, &str)] = if include_journals {
-        &[("include", "attachments,journals")]
+        &[("include", "attachments,children,journals")]
     } else {
-        &[("include", "attachments")]
+        &[("include", "attachments,children")]
     };
     let wrapper: IssueWrapper = client.get(&path, query)?;
     output::render_issue_detail(config.format, out, &wrapper.issue, include_journals);

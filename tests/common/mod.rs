@@ -18,6 +18,7 @@ pub struct MockServer {
 pub struct RecordedRequest {
     pub method: String,
     pub path: String,
+    pub query: String,
     pub body: String,
     pub api_key: Option<String>,
 }
@@ -115,10 +116,10 @@ fn handle_one(
         if buf.windows(4).any(|w| w == b"\r\n\r\n") { break; }
     }
     let raw = String::from_utf8_lossy(&buf).to_string();
-    let (method, path, api_key, body) = parse_request(&raw);
+    let (method, path, query, api_key, body) = parse_request(&raw);
 
     requests.lock().unwrap().push(RecordedRequest {
-        method: method.clone(), path: path.clone(), body: body.clone(), api_key,
+        method: method.clone(), path: path.clone(), query: query.clone(), body: body.clone(), api_key,
     });
 
     let (status, body_out) = {
@@ -152,7 +153,7 @@ fn handle_one(
     Ok(())
 }
 
-fn parse_request(raw: &str) -> (String, String, Option<String>, String) {
+fn parse_request(raw: &str) -> (String, String, String, Option<String>, String) {
     let mut header_end = 0usize;
     if let Some(idx) = raw.find("\r\n\r\n") { header_end = idx; }
     let head = &raw[..header_end];
@@ -162,7 +163,10 @@ fn parse_request(raw: &str) -> (String, String, Option<String>, String) {
     let mut parts = request_line.split_whitespace();
     let method = parts.next().unwrap_or("").to_string();
     let target = parts.next().unwrap_or("").to_string();
-    let path = target.split('?').next().unwrap_or("").to_string();
+    let (path, query) = match target.split_once('?') {
+        Some((p, q)) => (p.to_string(), q.to_string()),
+        None => (target.clone(), String::new()),
+    };
     let mut api_key = None;
     for line in lines {
         let lower = line.to_ascii_lowercase();
@@ -171,7 +175,7 @@ fn parse_request(raw: &str) -> (String, String, Option<String>, String) {
             api_key = Some(line[start..].trim().to_string());
         }
     }
-    (method, path, api_key, body)
+    (method, path, query, api_key, body)
 }
 
 pub fn test_config(server: &MockServer) -> Config {

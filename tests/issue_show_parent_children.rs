@@ -37,6 +37,27 @@ fn run_show(server: &common::MockServer, body: String, extra: &[&str]) -> (Strin
 }
 
 #[test]
+fn show_requests_children_in_include() {
+    let server = common::MockServer::start();
+    let body = issue_json(None, None);
+    let _ = run_show(&server, body, &[]);
+    let req = &server.requests()[0];
+    assert!(req.query.contains("include="), "query: {}", req.query);
+    assert!(req.query.contains("children"), "query: {}", req.query);
+    assert!(req.query.contains("attachments"), "query: {}", req.query);
+}
+
+#[test]
+fn show_with_notes_requests_children_and_journals() {
+    let server = common::MockServer::start();
+    let body = issue_json(None, None);
+    let _ = run_show(&server, body, &["--notes"]);
+    let req = &server.requests()[0];
+    assert!(req.query.contains("children"), "query: {}", req.query);
+    assert!(req.query.contains("journals"), "query: {}", req.query);
+}
+
+#[test]
 fn show_prints_parent_id_after_project() {
     let server = common::MockServer::start();
     let body = issue_json(Some(r#"{"id":99}"#), None);

@@ -16,12 +16,12 @@ Name resolution: status/priority/tracker/assignee accept human names or ids; `me
 
 ### Pre-built binary
 
-Download `redmine` for Linux or `redmine.exe` for Windows from [GitHub releases](https://github.com/<owner>/redmine-cli/releases), make it executable, and put it on your `PATH`.
+Download `redmine` for Linux or `redmine.exe` for Windows from [GitHub releases](https://github.com/krowlexing/redmine-cli/releases), make it executable, and put it on your `PATH`.
 
 ### From source
 
 ```
-cargo install --git https://github.com/<owner>/redmine-cli.git
+cargo install --git https://github.com/krowlexing/redmine-cli.git
 ```
 
 The package is `redmine-cli`; it installs a single binary named **`redmine`**.

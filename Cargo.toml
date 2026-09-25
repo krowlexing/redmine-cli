@@ -2,6 +2,7 @@
 name = "redmine-cli"
 version = "0.1.0"
 edition = "2021"
+repository = "https://github.com/krowlexing/redmine-cli"
 description = "Command-line client for the Redmine REST API"
 license = "MIT"
 

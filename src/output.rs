@@ -200,9 +200,14 @@ pub fn render_issue_detail<W: Write>(
             let _ = writeln!(out, "{}", serde_json::to_string(issue).unwrap_or_default());
         }
         Format::Tab | Format::Pretty => {
-            let kv = vec![
+            let mut kv = vec![
                 ("id", issue.id.to_string()),
                 ("project", project_name(&issue.project)),
+            ];
+            if let Some(parent) = &issue.parent {
+                kv.push(("parent", parent.id.to_string()));
+            }
+            kv.extend([
                 ("tracker", named_name(&issue.tracker)),
                 ("status", named_name(&issue.status)),
                 ("priority", named_name(&issue.priority)),
@@ -214,9 +219,18 @@ pub fn render_issue_detail<W: Write>(
                 ("due_date", opt_str(&issue.due_date)),
                 ("created_on", fmt_dt(&issue.created_on)),
                 ("updated_on", fmt_dt(&issue.updated_on)),
-            ];
+            ]);
             for (k, v) in &kv {
                 let _ = writeln!(out, "{k}\t{v}");
+            }
+            if let Some(children) = &issue.children {
+                if !children.is_empty() {
+                    let _ = writeln!(out);
+                    let _ = writeln!(out, "CHILDREN");
+                    for c in children {
+                        let _ = writeln!(out, "{}\t{}\t{}", c.id, named_name(&c.tracker), c.subject);
+                    }
+                }
             }
             if !issue.description.is_empty() {
                 let _ = writeln!(out);

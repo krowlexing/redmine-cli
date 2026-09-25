@@ -48,9 +48,27 @@ pub struct Issue {
     #[serde(default)]
     pub closed_on: Option<String>,
     #[serde(default)]
+    pub parent: Option<ParentRef>,
+    #[serde(default)]
+    pub children: Option<Vec<ChildIssue>>,
+    #[serde(default)]
     pub journals: Option<Vec<Journal>>,
     #[serde(default)]
     pub attachments: Option<Vec<Attachment>>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ParentRef {
+    pub id: i64,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ChildIssue {
+    pub id: i64,
+    #[serde(default)]
+    pub tracker: Option<NamedRef>,
+    #[serde(default)]
+    pub subject: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

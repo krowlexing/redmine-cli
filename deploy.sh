@@ -22,11 +22,10 @@ esac
 
 artifact() {
   local src="$1" name="$2"
-  mkdir -p "$DIST/$name"
-  cp "$src" "$DIST/$name/"
-  tar -C "$DIST" -czf "$DIST/$name.tar.gz" "$name"
-  sha256sum "$DIST/$name.tar.gz" >"$DIST/$name.tar.gz.sha256"
-  ls -lh "$DIST/$name.tar.gz" | awk '{print "==> artifact", $5, $9}'
+  mkdir -p "$DIST"
+  cp "$src" "$DIST/$name"
+  sha256sum "$DIST/$name" >"$DIST/$name.sha256"
+  ls -lh "$DIST/$name" | awk '{print "==> artifact", $5, $9}'
 }
 
 check_linux() {
@@ -59,7 +58,7 @@ build_linux() {
   echo "==> unstripped: $(du -h "$LINUX_BIN" | cut -f1)"
   strip "$LINUX_BIN"
   echo "==> stripped:   $(du -h "$LINUX_BIN" | cut -f1)"
-  artifact "$LINUX_BIN" "redmine-$VERSION-x86_64-unknown-linux-gnu"
+  artifact "$LINUX_BIN" "redmine"
 }
 
 build_windows() {
@@ -72,7 +71,7 @@ build_windows() {
   else
     echo "warning: x86_64-w64-mingw32-strip not found, shipping unstripped exe" >&2
   fi
-  artifact "$WIN_BIN" "redmine-$VERSION-$WIN_TARGET"
+  artifact "$WIN_BIN" "redmine.exe"
 }
 
 case "$MODE" in

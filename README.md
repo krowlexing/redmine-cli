@@ -18,8 +18,6 @@ Name resolution: status/priority/tracker/assignee accept human names or ids; `me
 
 Download `redmine` for Linux or `redmine.exe` for Windows from [GitHub releases](https://github.com/<owner>/redmine-cli/releases), make it executable, and put it on your `PATH`.
 
-A `.sha256` checksum is published next to each binary.
-
 ### From source
 
 ```

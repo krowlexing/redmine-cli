@@ -24,7 +24,6 @@ artifact() {
   local src="$1" name="$2"
   mkdir -p "$DIST"
   cp "$src" "$DIST/$name"
-  sha256sum "$DIST/$name" >"$DIST/$name.sha256"
   ls -lh "$DIST/$name" | awk '{print "==> artifact", $5, $9}'
 }
 

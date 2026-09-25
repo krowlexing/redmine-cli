@@ -37,7 +37,7 @@ redmine status
 
 ## Rules for agents
 
-- Mutating commands (`create`, `update`, `set-status`, `assign`, `close`) are refused by default with exit code 6. This is intentional. Do not attempt to bypass it: ask the human to set `mutable = true` in the config file (`redmine config path`) or export `REDMINE_ALLOW_MUTATIONS=true` on the host.
+- Mutating commands (`create`, `update`, `set-status`, `assign`, `close`) are refused by default with exit code 6. This is intentional. Do not attempt to bypass it; ask the human to enable mutations on the host.
 - Statuses, priorities, trackers, and assignees accept human names or ids; `me` resolves to the API key owner. Ambiguous names fail with exit code 4 and list candidates.
 - `--format json` emits one compact JSON object per record; `--format pretty` renders a Markdown table for humans.
 - Exit codes: 2 usage, 3 not found, 4 ambiguous name, 5 config, 6 mutation blocked, 10 other HTTP, 11 auth, 12 HTTP not found, 13 validation, 14 server, 15 network, 16 decode.

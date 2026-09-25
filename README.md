@@ -114,8 +114,11 @@ id	project	tracker	status	priority	assignee	subject	updated
 $ redmine issue show 1234
 id	1234
 project	infra
+parent	1230
 status	In Progress
 ...
+CHILDREN
+1236	Bug	Fix conveyor sensor
 DESCRIPTION
 The CI build fails...
 ```

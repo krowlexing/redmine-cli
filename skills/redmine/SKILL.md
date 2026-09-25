@@ -21,7 +21,7 @@ Config precedence: CLI flags > environment (`REDMINE_URL`, `REDMINE_API_KEY`, `R
 ```bash
 redmine issue mine
 redmine issue list [--assigned-to <id|me|name>] [--status <open|closed|name|id>] [--project <ident|id|->] [--limit N] [--sort field:dir] [--all]
-redmine issue show <ID> [--notes]
+redmine issue show <ID> [--notes]              # detail incl. parent id and subtasks
 redmine issue attachments list <ID>
 redmine issue attachments download <ID> [--output <path>]
 redmine project list

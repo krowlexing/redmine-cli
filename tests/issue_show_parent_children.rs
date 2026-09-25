@@ -45,6 +45,7 @@ fn show_requests_children_in_include() {
     assert!(req.query.contains("include="), "query: {}", req.query);
     assert!(req.query.contains("children"), "query: {}", req.query);
     assert!(req.query.contains("attachments"), "query: {}", req.query);
+    assert!(!req.query.contains("journals"), "query: {}", req.query);
 }
 
 #[test]

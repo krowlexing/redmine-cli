@@ -6,19 +6,18 @@ use crate::config::Format;
 #[command(
     name = "redmine",
     version,
-    about = "Command-line client for the Redmine REST API (agent-friendly output)",
+    about = "Command-line client for the Redmine REST API",
     long_about = None
 )]
 pub struct Cli {
-    #[arg(long, env = "REDMINE_URL", global = true, help = "Redmine base URL")]
+    #[arg(long, global = true, help = "Redmine base URL")]
     pub url: Option<String>,
 
-    #[arg(long, env = "REDMINE_API_KEY", global = true, help = "Redmine API key")]
+    #[arg(long, global = true, help = "Redmine API key")]
     pub key: Option<String>,
 
     #[arg(
         long,
-        env = "REDMINE_FORMAT",
         global = true,
         value_enum,
         help = "Output format: tab (default), pretty, json"
@@ -56,7 +55,7 @@ pub enum Command {
     Status,
     /// Generate shell completions
     Completion {
-        #[arg(value_enum)]
+        #[arg(value_enum, help = "Shell to generate completions for")]
         shell: clap_complete::Shell,
     },
     /// Manage local configuration
@@ -92,12 +91,14 @@ pub enum IssueCommand {
     SetStatus {
         #[arg(help = "Issue ID")]
         id: i64,
+        #[arg(help = "New status (name or id)")]
         status: String,
     },
     /// Convenience: assign only
     Assign {
         #[arg(help = "Issue ID")]
         id: i64,
+        #[arg(help = "Assignee (id, 'me', or name substring)")]
         assignee: String,
     },
     /// Convenience: close (set status to Closed)
@@ -136,7 +137,7 @@ pub struct OfArgs {
     pub status: Option<String>,
     #[arg(long, help = "Filter project: identifier, id, or '-' for default")]
     pub project: Option<String>,
-    #[arg(long, help = "Filter assignee")]
+    #[arg(long, help = "Filter assignee: id, 'me', or name substring")]
     pub assigned_to: Option<String>,
     #[arg(long, default_value = "25", help = "Page size")]
     pub limit: u32,

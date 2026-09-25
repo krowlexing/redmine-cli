@@ -16,17 +16,12 @@ redmine config show    # verify (api_key is masked)
 
 Config precedence: CLI flags > environment (`REDMINE_URL`, `REDMINE_API_KEY`, `REDMINE_PROJECT`, `REDMINE_FORMAT`) > config file (`redmine config path`).
 
-## Commands
+## Commands (read-only)
 
 ```bash
 redmine issue mine
 redmine issue list [--assigned-to <id|me|name>] [--status <open|closed|name|id>] [--project <ident|id|->] [--limit N] [--sort field:dir] [--all]
 redmine issue show <ID> [--notes]
-redmine issue create --subject <S> [--project <ident|id|->] [--description <D>] [--assignee <id|me|name>] [--tracker <name|id>] [--priority <name|id>] [--status <name|id>]
-redmine issue update <ID> [--status S] [--assignee A] [--subject S] [--description D] [--priority P] [--done 0-100] [--note <comment>]
-redmine issue set-status <ID> <STATUS>
-redmine issue assign <ID> <ASSIGNEE>
-redmine issue close <ID>
 redmine issue attachments list <ID>
 redmine issue attachments download <ID> [--output <path>]
 redmine project list
